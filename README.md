@@ -297,7 +297,7 @@ assets/         wallpaper, icons, and whatever you add
 
 ## Credits 🫧
 
-You do not need to credit me! Take it, rename it, and change whatever you like.
+You do not need to credit me! 
 
 Please do keep the Credits window though, or the links from it somewhere on
 your site. Bubbles was made possible with these assets :)
