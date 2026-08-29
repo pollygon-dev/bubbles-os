@@ -323,7 +323,7 @@ not_found.html are released under [the Unlicense](https://unlicense.org), so
 take them, change them, sell them, do whatever you like. No credit needed, no
 strings attached. Full text is in the LICENSE file.
 
-**The assets are a different story.** The files in `assets/` are not mine to
+**The assets are different.** The files in `assets/` are not mine to
 hand out, so the Unlicense does not cover them:
 
 | File | Where it comes from |
@@ -332,7 +332,7 @@ hand out, so the Unlicense does not cover them:
 | `vista-icons/` and `icons/` | Windows Vista icons, copyright Microsoft. |
 | `windowsbutton.svg` | The Windows flag shape, a Microsoft trademark. |
 | `user-icon.jpg` | The old Messenger buddy icon, also Microsoft. |
-| `gallery/` | Anime wallpapers by artists I cannot credit properly. |
+| `gallery/` | Anime wallpapers found on Frutiger Aero Archive. |
 | `favicon.svg` | Made for this template, public domain like the code. |
 
 So: the code is yours to do anything with, and the pictures are placeholders to
