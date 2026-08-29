@@ -1,7 +1,7 @@
 # Bubbles 🫧
 
 Hi there! Bubbles is a website template that boots up like Windows 7 and looks
-like Frutiger Aero.
+like Frutiger Aero. Primarily made to experiment with Winbox.js and 7.css.
 
 Made with Neocities and Nekoweb in mind, though it runs anywhere that can serve
 files.
