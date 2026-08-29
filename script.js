@@ -23,7 +23,7 @@ const OUTLINE    = "#2c7ea3";  // window border
        data-w       how wide it opens            (default: 520)
        data-h       how tall it opens            (default: 460)
 
-   Add a section, give it a desktop icon, and that is the whole job. */
+   Add a section, give it a desktop icon, and it's done! */
 const WINDOWS = {};
 document.querySelectorAll("#templates [data-tpl]").forEach((sec) => {
   const key = sec.dataset.tpl;
@@ -146,14 +146,13 @@ window.addEventListener("resize", () => {
   if (!reflowRaf) reflowRaf = requestAnimationFrame(reflowWindows);
 });
 
-/* ---------- Build an authentic 7.css window element ---------- */
+/* ---------- Build a 7.css window element ---------- */
 function build7Window(key, def, content) {
   const win = document.createElement("div");
   win.className = "window active";
-  // The documented pink override: redefine 7.css's own variables inline.
-  win.style.setProperty("--w7-w-bg", FRAME);      // pink title bar / frame
-  win.style.setProperty("--w7-surface", SURFACE); // pale pink body
-  win.style.setProperty("--w7-w-bd", OUTLINE);         // dusty-purple outline
+  win.style.setProperty("--w7-w-bg", FRAME);     
+  win.style.setProperty("--w7-surface", SURFACE); 
+  win.style.setProperty("--w7-w-bd", OUTLINE);       
 
   win.innerHTML = `
     <div class="title-bar">
