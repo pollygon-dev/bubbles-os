@@ -1136,6 +1136,29 @@ img.btn88 { border: 1px solid #b9dcea; border-style: solid; image-rendering: pix
 .task-btn .win-ico { width: 22px; height: 22px; display: block; margin: 0 auto; filter: drop-shadow(0 1px 1px rgba(4,52,78,.5)); }
 .dp-icon img { width: 52px; height: 52px; display: block; margin: 0 auto; }
 
+/* ---------- Windows that hold an iframe ----------
+   Put class="win-frame" on an <iframe> and it fills its whole window.
+   The window body and the section around it get a definite height so the
+   iframe's height: 100% has something real to measure against. */
+.winbox.seven .wb-body > .window > .window-body:has(.win-frame) {
+  padding: 0;
+  overflow: hidden;
+}
+.winbox.seven .wb-body > .window > .window-body:has(.win-frame) > section {
+  display: block;
+  height: 100%;
+}
+.winbox.seven .win-frame {
+  position: static;      /* WinBox positions iframes absolutely, which made
+                            them measure against the whole window frame and
+                            spill over the status bar */
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+}
+
 /* ---------- The little corner window ---------- */
 #desk-panel {
   position: absolute;

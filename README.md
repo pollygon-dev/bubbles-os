@@ -91,6 +91,50 @@ Note: the Gallery is the only window using the file explorer look, meaning the
 address bar, the folder tree and the toolbar. If you want a second window like
 it, copy that whole `<section>` and rename its `data-tpl`.
 
+### Putting another page inside a window
+
+You can add `<iframe>` inside the windows. This is how you get
+a YouTube video, a chatbox, a music player or a webring widget running inside
+your desktop.
+
+Give the iframe `class="win-frame"` and it fills the whole window:
+
+```html
+<section data-tpl="video"
+         data-title="Video" data-icon="bxs-videos"
+         data-w="580" data-h="400">
+  <iframe class="win-frame"
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+          title="Video"
+          allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+</section>
+```
+
+Then add a desktop icon with `data-window="video"` and you have a video player
+window.
+
+Some things worth knowing:
+
+- **Not every site can be embedded.** Plenty of them (Google, Twitter, most
+  social media) send a header that forbids it, and the window will just come up
+  blank. YouTube, Spotify, Bandcamp, Cbox, itch.io and most widget services are
+  built for embedding and work fine.
+- **Use the embed address, not the normal one.** For YouTube that means
+  `youtube.com/embed/VIDEO_ID`, not the `watch?v=` link you copy from the
+  address bar. Most services have a "share" or "embed" button that gives you
+  the right one.
+- **Stick to https.** A site on https cannot load an http iframe, and Neocities
+  and Nekoweb are both https.
+- **You can embed your own pages too.** `src="another-page.html"` is a nice way
+  to keep long content out of index.html.
+- **Add `loading="lazy"`** so the iframe only loads when the window is opened
+  rather than on every page load.
+
+Dragging and resizing still work over an iframe. The template already handles
+the fiddly parts of that, so you do not need to do anything extra.
+
 ### Making a new window
 
 Two steps, both in `index.html`. No JavaScript needed, windows sign themselves
