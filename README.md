@@ -19,7 +19,7 @@ files.
 ## Putting it online
 
 Upload the files exactly how they are. `index.html` has to sit at the top
-level, that's the only rule.
+level.
 
 **Neocities:** go to your dashboard and drag in `index.html`, `styles.css`,
 `script.js` and `not_found.html`. Then make a folder called `assets` and put
