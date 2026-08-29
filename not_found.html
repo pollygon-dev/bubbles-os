@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404, page not found</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/7.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+  <style>
+    /* Neocities serves this file for any missing page; Nekoweb and most other
+       static hosts have their own 404 setting that can point here too.
+
+       The two root-absolute paths in this file (the favicon above and the
+       "Go to desktop" button below) assume the site lives at the root of the
+       domain. If you install the template in a subfolder, change both `/`
+       paths to match. */
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: grid; place-items: center;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background:
+        url("assets/wallpaper.jpg") center / cover no-repeat,
+        linear-gradient(180deg, #1c86c6 0%, #55b6e6 30%, #a6ddf4 52%, #d9f3c8 64%, #8ac95e 100%);
+    }
+    .window { width: min(430px, calc(100vw - 32px)); box-shadow: 0 14px 46px rgba(3,100,127,.45); }
+    .err-body { display: flex; gap: 14px; padding: 18px 20px 6px; align-items: flex-start; }
+    .err-icon {
+      flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 26px; color: #ffffff;
+      background: radial-gradient(circle at 50% 26%, #d1f4fe 0%, #87def6 46%, #58b5cf 100%);
+      border: 1px solid #5fa4b7; box-shadow: inset 0 1px 2px rgba(255,255,255,.7);
+    }
+    .err-title { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: #4d687f; }
+    .err-text { margin: 0; font-size: 13px; line-height: 1.5; color: #394855; }
+    .err-path {
+      margin: 10px 0 0; padding: 6px 8px; font-size: 12px; color: #697987;
+      background: #f4fafb; border: 1px solid #d4e2ef; border-radius: 3px;
+      word-break: break-all;
+    }
+    .err-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px 18px; }
+  </style>
+</head>
+<body>
+  <div class="window" style="--w7-w-bg:#8ed2ef; --w7-surface:#f3fbfe; --w7-w-bd:#2c7ea3;">
+    <div class="title-bar">
+      <div class="title-bar-text"><i class="bx bxs-error-circle"></i>&nbsp;Page Not Found</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="history.back()"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="err-body">
+        <div class="err-icon"><i class="bx bx-x"></i></div>
+        <div>
+          <p class="err-title">Windows can't find this page</p>
+          <p class="err-text">Check the spelling and try again, or head back to the desktop.</p>
+          <p class="err-path" id="err-path"></p>
+        </div>
+      </div>
+      <div class="err-actions">
+        <button type="button" onclick="history.back()">Back</button>
+        <button type="button" onclick="location.href='/'">Go to desktop</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <p class="status-bar-field">Error 404</p>
+      <p class="status-bar-field">Bubbles OS</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("err-path").textContent = location.pathname + location.search;
+  </script>
+</body>
+</html>

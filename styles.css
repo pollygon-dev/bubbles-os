@@ -1,0 +1,1171 @@
+/* =======================================================
+   Bubbles OS.
+
+   Every colour comes from the nine variables below. Change those and
+   the desktop, taskbar, Start menu, window frames and boot screen all
+   follow along. Best place to start if you want your own look!
+   ======================================================= */
+
+:root {
+  /* Frutiger Aero palette: glossy sky blues with a fresh green to go
+     with them. Swap in your own colours here. */
+  --tint-1: #e6f8fe;   /* palest sky, for window tints and hovers */
+  --tint-2: #b6e9fa;   /* soft aqua */
+  --tint-3: #7fd6f2;   /* mid aqua */
+  --accent: #1f9bc9;   /* strong aqua, for links and active bits */
+  --ink:    #0d4a68;   /* deep ocean blue, for headings and strong text */
+
+  --alt-1: #eefbe2;    /* palest green, for secondary surfaces */
+  --alt-2: #cdf0aa;    /* fresh green */
+  --alt-3: #9fd8e8;    /* seafoam */
+
+  --outline: #2c7ea3;      /* window / control outline */
+  --outline-deep: #14536f; /* darker outline, deep text */
+
+  --glass: rgba(255, 255, 255, 0.55);
+
+  /* WALLPAPER
+     Drop yours in assets/ and change the path below. Want no photo at
+     all? Set --wallpaper: none; and you get a built in gradient sky.
+     --scenery draws the CSS floor grid and the haze on the horizon:
+     keep it as "" with the gradient sky, set it to none with a photo. */
+  --wallpaper: url("assets/wallpaper.jpg");
+  --scenery: none;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  user-select: none;
+}
+
+/* ---------- Desktop / wallpaper ---------- */
+#desktop {
+  position: fixed;
+  inset: 0 0 40px 0;              /* leave room for taskbar */
+  /* Your image (when --wallpaper is set) sits on top of the built-in
+     sky-to-grass gradient, so either one alone looks right. */
+  background:
+    var(--wallpaper) center / cover no-repeat,
+    radial-gradient(900px 460px at 50% 72%, rgba(255,255,255,.8) 0%, transparent 60%),
+    radial-gradient(900px 560px at 80% 4%, rgba(255,255,255,.9) 0%, transparent 55%),
+    linear-gradient(180deg,
+      #1c86c6 0%,
+      #55b6e6 30%,
+      #a6ddf4 52%,
+      #d9f3c8 64%,
+      #8ac95e 100%);
+  overflow: hidden;
+}
+
+/* Retro perspective checkerboard floor (pastel), receding to a horizon.
+   Perspective is baked into the transform so #desktop keeps a flat stacking
+   context for the WinBox windows. */
+#desktop {
+  --grid:
+    linear-gradient(45deg, #79bd53 25%, transparent 25%, transparent 75%, #79bd53 75%, #79bd53),
+    linear-gradient(45deg, #79bd53 25%, #a8db7d 25%, #a8db7d 75%, #79bd53 75%, #79bd53);
+  --gsize: 56px 56px;
+  --gpos: 0 0, 28px 28px;
+}
+#desktop::before {
+  content: var(--scenery, "");    /* --scenery: none hides the CSS floor */
+  position: absolute;
+  left: -40%; right: -40%;
+  bottom: 0;
+  height: 68%;
+  background-image: var(--grid);
+  background-size: var(--gsize);
+  background-position: var(--gpos);
+  transform: perspective(620px) rotateX(72deg);
+  transform-origin: bottom center;
+  /* dissolve the far edge into the sky */
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.6) 45%, transparent 85%);
+  mask-image: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.6) 45%, transparent 85%);
+  opacity: .5;
+  pointer-events: none;
+  z-index: 0;
+}
+/* soft glow along the horizon line */
+#desktop::after {
+  content: var(--scenery, "");    /* haze at the horizon, off with the rest of the scenery */
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 34%;
+  height: 120px;
+  background: radial-gradient(60% 100% at 50% 100%, rgba(255,255,255,.85), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---------- Desktop icons ---------- */
+#icons {
+  list-style: none;
+  margin: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 6px;
+  height: 100%;
+  align-content: flex-start;
+  position: relative;
+  z-index: 1;
+}
+.desk-icon {
+  width: 88px;
+  padding: 8px 4px;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(2,32,52,.95), 0 0 9px rgba(2,32,52,.7);
+}
+.desk-icon:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.4); }
+.desk-icon:focus { background: rgba(255,255,255,.28); border-color: #ffffff; outline: none; }
+.desk-icon .icon { display: block; line-height: 1; }
+.desk-icon .icon .bx {
+  font-size: 44px;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 2px rgba(38,57,74,.7));
+}
+.desk-icon:hover .icon .bx { filter: drop-shadow(0 2px 4px rgba(38,57,74,.8)) brightness(1.05); }
+
+/* Aero gloss on the glyphs: a light top half, a hard shine break at the
+   midpoint, and a bit of bounce light at the bottom. Those three moves
+   that make a Windows 7 icon look like moulded plastic. Painted through
+   the glyph with background-clip, so it degrades to plain white if the
+   browser can't do it. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  /* Boxicons draws the glyph in ::before, so the gradient has to be painted
+     on the pseudo-element, because the <i> itself holds no text to clip against. */
+  .desk-icon .icon .bx::before {
+    background: linear-gradient(180deg,
+      #ffffff 0%,
+      #e2f6fe 44%,
+      #8ad3ef 46%,
+      #2a87b8 80%,
+      #63b6da 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* the dark rim keeps the glyph off the wallpaper now that it isn't solid white */
+  .desk-icon .icon .bx {
+    filter:
+      drop-shadow(0 1px 0 rgba(3,44,68,.55))
+      drop-shadow(0 2px 4px rgba(2,32,52,.7));
+  }
+  /* .desk-icon's text-shadow (meant for the label) is inherited by the glyph and
+     paints ON TOP of a background-clip:text fill, hiding it. The drop-shadow
+     above does the icon's shadow instead. */
+  .desk-icon .icon,
+  .desk-icon .icon .bx,
+  .desk-icon .icon .bx::before { text-shadow: none; }
+  .desk-icon:hover .icon .bx::before,
+  .desk-icon:focus .icon .bx::before {
+    background: linear-gradient(180deg,
+      #ffffff 0%,
+      #f5fdff 46%,
+      #c6f1fc 48%,
+      #8ecfe1 80%,
+      #b8ebf9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .desk-icon:hover .icon .bx,
+  .desk-icon:focus .icon .bx {
+    filter:
+      drop-shadow(0 1px 0 rgba(53,83,109,.45))
+      drop-shadow(0 2px 5px rgba(38,57,74,.65));
+  }
+}
+.desk-icon .label { font-size: 12px; display: block; margin-top: 4px; }
+
+/* ---------- Welcome window ---------- */
+.welcome-pad { padding: 16px 20px; }
+.welcome-logo { text-align: center; margin-bottom: 6px; }
+.welcome-logo img { width: 240px; max-width: 80%; height: auto; filter: drop-shadow(0 3px 6px rgba(48,77,102,.25)); }
+.welcome-lead { margin: 0 0 12px; color: #394855; }
+.welcome-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+/* The text sits in its own <span>: a bare text run and each <b> would
+   otherwise become separate flex items and wrap in separate columns. */
+.welcome-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: #394855; }
+.welcome-list li > span { min-width: 0; line-height: 1.45; }
+/* the drag tip only applies where windows can actually be dragged */
+.welcome-list .tip-touch { display: none; }
+.welcome-list .bx { font-size: 18px; color: var(--accent); flex: 0 0 auto; margin-top: 1px; }
+.welcome-note {
+  background: linear-gradient(135deg, #ffffff, #ecf3f9);
+  border: 1px solid var(--alt-3); border-left: 3px solid var(--tint-3);
+  border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--outline-deep);
+}
+.welcome-note a { color: #65a8ba; font-weight: 700; text-decoration: none; }
+.welcome-note a:hover { text-decoration: underline; }
+
+/* ---------- Taskbar (Windows 7 Aero glass) ---------- */
+#taskbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  /* Aero glass: bright top gloss, lighter upper half, darker lower half */
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.55) 0%,
+      rgba(255,255,255,.22) 3%,
+      rgba(212,235,242,.42) 4%,
+      rgba(178,208,216,.42) 49%,
+      rgba(110,139,164,.50) 50%,
+      rgba(92,120,145,.55) 100%),
+    linear-gradient(180deg, #bad4db, #7393af);
+  backdrop-filter: blur(12px) saturate(1.35);
+  -webkit-backdrop-filter: blur(12px) saturate(1.35);
+  border-top: 1px solid rgba(255,255,255,.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),
+    inset 0 -1px 0 rgba(0,0,0,.25),
+    0 -2px 10px rgba(48,74,97,.35);
+  overflow: visible;            /* let the Start orb bulge above the bar */
+  z-index: 10001;               /* above the Start menu so the orb overlays it */
+}
+
+/* Round, raised Start orb (Win7 pearl) */
+#start-btn {
+  position: relative;
+  flex: 0 0 auto;
+  width: 54px; height: 54px;
+  min-width: 0;                 /* 7.css sets min-width:75px on <button> */
+  margin: -13px 4px 0 3px;      /* bulge above the taskbar */
+  padding: 0;
+  font-size: 0;                 /* hide the "Start" text node */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  appearance: none;             /* strip native button chrome (square hover) */
+  -webkit-appearance: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    radial-gradient(circle at 50% 32%,
+      #ffffff 0%, #cceff9 14%, #98d2e3 42%, #65a4b5 70%, #4c6d89 100%);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.55),
+    0 0 0 3px rgba(77,110,138,.55),
+    0 3px 8px rgba(33,56,77,.5),
+    inset 0 2px 5px rgba(255,255,255,.8),
+    inset 0 -6px 10px rgba(67,100,128,.55);
+}
+/* 7.css gives <button> rectangular ::before/::after overlays that fade in on
+   hover/active, and on the round orb they show through the corners as a SQUARE.
+   Kill the ::before, and repurpose ::after as the glossy pearl highlight. */
+#start-btn::before { content: none !important; }
+#start-btn::after {          /* glossy top highlight on the pearl */
+  content: "" !important;
+  position: absolute;
+  left: 18%; right: 18%; top: 12%;
+  height: 34%;
+  width: auto;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,0)) !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  z-index: 2;
+  pointer-events: none;
+}
+/* The Windows flag on the Start orb. It's a plain <img> with the white
+   already baked into the SVG, so no mask support needed anywhere. Swap
+   assets/windowsbutton.svg for your own mark if you want. */
+#start-btn .winflag {
+  display: block;
+  width: 21px; height: 19px;
+  filter: drop-shadow(0 1px 1px rgba(4, 52, 78, .55));
+}
+#start-btn:hover  { filter: brightness(1.08) saturate(1.1); }
+#start-btn:active { filter: brightness(.96); }
+#start-btn .orb { display: grid; place-items: center; width: 100%; height: 100%; }
+#start-btn .orb .bx {
+  font-size: 26px;
+  color: #ffffff;
+  filter: drop-shadow(0 1px 1px rgba(52,82,108,.7));
+}
+
+/* Program buttons: square, icon only, glassy like Win7 */
+#task-buttons { flex: 1; display: flex; align-items: center; gap: 3px; overflow: hidden; padding-left: 2px; height: 100%; }
+.task-btn {
+  height: 36px;
+  width: 52px;
+  min-width: 0;                 /* 7.css sets min-width:75px on <button> */
+  margin: 1px 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+.task-btn::before, .task-btn::after { content: none !important; }  /* drop 7.css button overlays */
+.task-btn .bx { font-size: 24px; color: #ffffff; filter: drop-shadow(0 1px 1px rgba(43,66,87,.6)); }
+.task-btn span { display: grid; place-items: center; font-size: 0; }   /* icon only */
+/* running app: subtle raised glass frame */
+.task-btn {
+  border-color: rgba(255,255,255,.35);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.06) 50%, rgba(255,255,255,.14));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.task-btn:hover {
+  border-color: rgba(255,255,255,.6);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.18) 50%, rgba(255,255,255,.28));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 0 8px rgba(225,248,254,.5);
+}
+/* focused window: pressed / brighter gel + colored underglow */
+.task-btn.active {
+  border-color: rgba(255,255,255,.7);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.6), rgba(184,236,250,.35) 50%, rgba(255,255,255,.4));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 0 10px rgba(255,255,255,.5),
+    inset 0 -3px 8px rgba(115,178,195,.5);
+}
+
+/* System tray: glass, with a divider from the app area */
+#tray {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px 0 12px;
+  height: 100%;
+  color: #ffffff;
+  font-size: 12px;
+  border-left: 1px solid rgba(255,255,255,.35);
+  box-shadow: -1px 0 0 rgba(52,82,108,.25);
+  text-shadow: 0 1px 1px rgba(43,66,87,.5);
+}
+#tray .bx { filter: drop-shadow(0 1px 1px rgba(43,66,87,.5)); }
+#clock {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+}
+#clock .date { font-size: 11px; opacity: .95; }
+
+/* ---------- Start menu (Windows 7 Aero) ---------- */
+#start-menu {
+  position: fixed;
+  left: 4px; bottom: 41px;
+  width: 402px; display: flex;
+  border-radius: 6px 6px 5px 5px;
+  border: 1px solid rgba(106,155,169,.7);
+  box-shadow: 0 12px 44px rgba(37,67,92,.5), inset 0 0 0 1px rgba(255,255,255,.6);
+  background: linear-gradient(180deg, rgba(246,253,255,.97), rgba(223,240,244,.96));
+  backdrop-filter: blur(14px) saturate(1.2);
+  z-index: 10000;
+  overflow: hidden;
+}
+/* the `hidden` attribute must win over the id's display:flex */
+#start-menu[hidden] { display: none; }
+/* LEFT side: pinned programs (white) */
+.sm-left {
+  width: 244px; flex: 0 0 244px;
+  background: rgba(255,255,255,.92);
+  border-right: 1px solid #cde2e8;
+  display: flex; flex-direction: column;
+  padding: 6px 6px 0;
+}
+.sm-programs { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; }
+.sm-programs li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; border: 1px solid transparent; border-radius: 3px; cursor: pointer;
+}
+.sm-programs li:hover {
+  background: linear-gradient(180deg, #e9fafe, #d1f0f8);
+  border-color: #b9e4ef; box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+.sm-ico {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 5px;
+  display: grid; place-items: center;
+  /* glossy Aero tile: bright top half, shine break, soft lower bounce */
+  background: linear-gradient(180deg, #ffffff, #e9fafe 45%, #caeef8 46%, #ddf5fc);
+  border: 1px solid #c7e6ee;
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 1px rgba(77,113,123,.18);
+}
+.sm-ico .bx { font-size: 19px; color: #65a6b8; }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .sm-ico .bx::before {
+    background: linear-gradient(180deg, #8fcadb, #65a6b8 45%, #4b90a3 46%, #63a8bb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sm-ico .bx { filter: drop-shadow(0 1px 0 rgba(255,255,255,.65)); }
+}
+.sm-txt { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.sm-txt b { font-size: 13px; font-weight: 600; color: #213240; }
+.sm-txt small { font-size: 11px; color: #8498aa; }
+.sm-allprograms {
+  display: flex; align-items: center; gap: 6px;
+  margin: 4px -6px 0; padding: 8px 12px; cursor: pointer;
+  font-size: 12.5px; font-weight: 700; color: #213240;
+  border-top: 1px solid #cde2e8;
+}
+.sm-allprograms:hover { background: linear-gradient(180deg, #e9fafe, #d1f0f8); }
+.sm-allprograms .bx { font-size: 13px; color: #65a6b8; }
+.sm-search { margin: 0 -6px; padding: 8px 10px; border-top: 1px solid #b4cbdf; width: auto; }
+.sm-search input { width: 100%; min-width: 0; height: 24px; font-size: 12px; font-family: inherit; box-sizing: border-box; }
+
+/* RIGHT side: user and places (glass) */
+.sm-right {
+  width: 158px; flex: 0 0 158px;
+  display: flex; flex-direction: column;
+  padding: 14px 0 10px;
+  background: linear-gradient(180deg, rgba(203,228,235,.6), rgba(178,208,216,.55));
+  color: #29454c;
+}
+.sm-avatar {
+  width: 54px; height: 54px; margin: 0 auto 4px; border-radius: 8px;
+  display: grid; place-items: center; overflow: hidden; font-size: 28px;
+  background: linear-gradient(135deg, var(--tint-2), var(--alt-2));
+  border: 2px solid #ffffff; box-shadow: 0 3px 8px rgba(48,77,102,.35);
+}
+.sm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sm-avatar .bx { color: #ffffff; }
+.sm-username {
+  text-align: center; font-weight: 700; font-size: 14px; color: #2b606f;
+  margin-bottom: 10px; text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+.sm-places { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; }
+.sm-places li { padding: 6px 14px; font-size: 12.5px; color: #29454c; cursor: pointer; }
+.sm-places li:hover { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.28)); }
+.sm-places li.sm-gap { height: 8px; padding: 0; border-top: 1px solid rgba(86,139,154,.3); margin: 6px 10px; cursor: default; }
+.sm-places li.sm-gap:hover { background: none; }
+.sm-places a { color: #29454c; text-decoration: none; display: block; }
+.sm-shutdown { padding: 8px 12px 0; }
+#shutdown {
+  width: 100%; min-width: 0; cursor: pointer; padding: 6px 10px; font-size: 12.5px;
+  font-family: inherit; color: #253e45; border: 1px solid #8bbbc8; border-radius: 4px;
+  background: linear-gradient(180deg, #ffffff, #daf2f9 48%, #b7e5f2 50%, #d1eff7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+}
+#shutdown::before, #shutdown::after { content: none !important; }
+#shutdown:hover { filter: brightness(1.05); }
+
+/* =======================================================
+   WinBox + 7.css marriage
+   ---------------------------------------------------------
+   WinBox is used ONLY as the drag / resize / stacking engine.
+   Its native chrome is hidden, and a REAL 7.css `.window`
+   (title-bar, title-bar-controls, window-body, status-bar)
+   is mounted inside as the actual, visible window.
+   ======================================================= */
+.winbox.seven {
+  background: transparent;      /* let the 7.css window show through */
+  box-shadow: none;
+}
+/* hide WinBox's own header + body chrome */
+.winbox.seven .wb-header { display: none; }
+.winbox.seven .wb-body {
+  top: 0;                       /* no header offset */
+  inset: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+/* the genuine 7.css window fills the WinBox body */
+.winbox.seven .wb-body > .window {
+  height: 100%;
+  margin: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 14px 46px rgba(3,100,127,.45);
+}
+.winbox.seven .wb-body > .window > .window-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  margin: 0;                    /* window-body handles its own spacing */
+  min-height: 0;
+}
+/* Explorer windows: make the body a flex column so the explorer fills the
+   full height (percentage heights don't resolve against a flex-sized body,
+   which left empty space when maximized). */
+.winbox.seven .wb-body > .window > .window-body:has(:is(.explorer, .about7)) {
+  display: flex; flex-direction: column; overflow: hidden;
+}
+/* the cloned template <section> wraps the layout, so make it pass the
+   flex height through so the layout fills the body. (Project-detail windows
+   mount the node directly, so this only matters for the wrapped ones.) */
+.winbox.seven .wb-body > .window > .window-body:has(:is(.explorer, .about7)) > section {
+  display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;
+}
+.winbox.seven .wb-body > .window > .status-bar { flex: 0 0 auto; }
+
+/* The pink look is produced the DOCUMENTED way: by redefining 7.css's
+   own --w7-w-bg (title bar / frame) and --w7-surface (body) variables
+   on each .window element in JS. No title-bar re-skin here, 7.css draws
+   the Aero gradient itself, just tinted pink. */
+.winbox.seven .title-bar-text { font-weight: 600; }
+
+/* Move cursor over the draggable title bar (but not over the controls). */
+.winbox.seven .title-bar { cursor: move; }
+.winbox.seven .title-bar-controls,
+.winbox.seven .title-bar-controls button { cursor: default; }
+
+/* --- Drag performance ---
+   7.css anchors the title-bar's Aero glass with `background-attachment:
+   fixed`, which forces a full-viewport repaint on every move and makes
+   dragging crawl. Pin the glass to the element instead (visually near
+   identical, hugely cheaper), and hint the compositor. */
+.winbox.seven .title-bar { background-attachment: scroll !important; }
+
+/* While dragging: WinBox transitions left/top over 0.3s, which makes a
+   drag EASE toward the cursor (laggy, and it keeps gliding after release).
+   Kill that transition during the drag so the window snaps to the pointer.
+   Also freeze pointer events inside the body so hover/repaint work doesn't
+   compete with the move. */
+.winbox.seven.wb-moving {
+  transition: none !important;
+  will-change: left, top;
+}
+.winbox.seven.wb-moving .wb-body { pointer-events: none; }
+
+/* keep the WinBox resize handles usable over the 7.css frame */
+.winbox.seven .wb-n,
+.winbox.seven .wb-e,
+.winbox.seven .wb-s,
+.winbox.seven .wb-w,
+.winbox.seven .wb-nw,
+.winbox.seven .wb-ne,
+.winbox.seven .wb-se,
+.winbox.seven .wb-sw { z-index: 2; }
+
+/* =======================================================
+   Windows 7 style scrollbars, to match 7.css
+   ======================================================= */
+.winbox.seven ::-webkit-scrollbar { width: 17px; height: 17px; }
+.winbox.seven ::-webkit-scrollbar-track { background: linear-gradient(to right, #d7e4f0, #f2f7fb 22%); }
+.winbox.seven ::-webkit-scrollbar-track:horizontal { background: linear-gradient(to bottom, #d7e4f0, #f2f7fb 22%); }
+.winbox.seven ::-webkit-scrollbar-corner { background: #e6f0f8; }
+.winbox.seven ::-webkit-scrollbar-thumb {
+  border: 1px solid #80c2d4; border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+  background: linear-gradient(to right, #e2f7fd 44%, #a5e1f2 44%, #80cee3);
+}
+.winbox.seven ::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(to bottom, #e2f7fd 44%, #a5e1f2 44%, #80cee3);
+}
+.winbox.seven ::-webkit-scrollbar-thumb:hover { filter: brightness(1.05); }
+.winbox.seven ::-webkit-scrollbar-thumb:active { filter: brightness(.95); }
+/* arrow buttons at the ends */
+.winbox.seven ::-webkit-scrollbar-button {
+  background: linear-gradient(#f6fcfd, #daebef); border: 1px solid #c7dcee;
+  background-repeat: no-repeat; background-position: center;
+}
+.winbox.seven ::-webkit-scrollbar-button:hover { background: linear-gradient(#ffffff, #e8f5f9); }
+.winbox.seven ::-webkit-scrollbar-button:vertical:single-button:decrement {
+  height: 16px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'><path d='M4.5 2 8 7 1 7z' fill='%237c5f8f'/></svg>");
+}
+.winbox.seven ::-webkit-scrollbar-button:vertical:single-button:increment {
+  height: 16px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'><path d='M1 2 8 2 4.5 7z' fill='%237c5f8f'/></svg>");
+}
+.winbox.seven ::-webkit-scrollbar-button:horizontal:single-button:decrement {
+  width: 16px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'><path d='M2 4.5 7 1 7 8z' fill='%237c5f8f'/></svg>");
+}
+.winbox.seven ::-webkit-scrollbar-button:horizontal:single-button:increment {
+  width: 16px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'><path d='M7 4.5 2 1 2 8z' fill='%237c5f8f'/></svg>");
+}
+.winbox.seven ::-webkit-scrollbar-button:vertical:double-button,
+.winbox.seven ::-webkit-scrollbar-button:horizontal:double-button { display: none; }
+
+/* =======================================================
+   Window content
+   ======================================================= */
+.win-pad { padding: 14px 16px; font-size: 13px; color: #333333; line-height: 1.5; }
+.win-pad h1 { margin: 0 0 2px; font-size: 20px; color: var(--ink); }
+.win-pad h2 { margin: 0 0 8px; color: var(--ink); }
+.win-pad h3 { margin: 0 0 4px; color: var(--outline-deep); }
+
+.btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+/* =======================================================
+   About window: sidebar plus sections,
+   styled to the pink 7.css aesthetic
+   ======================================================= */
+.about7 {
+  display: flex; height: 100%; flex: 1 1 auto; min-height: 0;
+  background: #ffffff;
+}
+/* left nav */
+.about7 .ab7-nav {
+  width: 150px; flex: 0 0 150px; overflow: auto;
+  display: flex; flex-direction: column; gap: 2px; padding: 12px 8px;
+  background: linear-gradient(180deg, #fafcfd, #ecf3f9);
+  border-right: 1px solid #d4e2ef;
+}
+.about7 .ab7-navlink {
+  text-align: left; border: 1px solid transparent; border-radius: 4px;
+  background: transparent; cursor: pointer; font-family: inherit;
+  padding: 7px 10px; font-size: 13px; color: var(--outline-deep);
+  min-width: 0; min-height: 0; box-shadow: none;
+}
+.about7 .ab7-navlink::before, .about7 .ab7-navlink::after { content: none !important; }
+.about7 .ab7-navlink:hover { background: var(--w7-li-bg-hl, #e5f3f7); border-color: #c4e0e8; }
+.about7 .ab7-navlink.active {
+  background: linear-gradient(#e5f7fc, #c8e9f3); border-color: #a8d8e6;
+  font-weight: 600; color: var(--ink);
+}
+
+/* content */
+.about7 { --w7-li-bg-hl: linear-gradient(#ffffffdd, #d2eef6cc 90%, #ffffffe6); }
+.ab7-content {
+  flex: 1 1 auto; min-width: 0; overflow: auto; padding: 18px 22px;
+  background: var(--w7-surface, #f4fafb); color: #2a3947; font-size: 13px; line-height: 1.55;
+}
+.ab7-profile { margin-bottom: 14px; }
+.ab7-avatar {
+  width: 66px; height: 66px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 38px; overflow: hidden;
+  background: linear-gradient(135deg, var(--tint-2), var(--alt-2));
+  border: 2px solid #ffffff; box-shadow: 0 4px 12px rgba(93,121,145,.22);
+  margin-bottom: 10px;
+}
+.ab7-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ab7-profile h1 { margin: 0; font-size: 26px; color: var(--ink); letter-spacing: .5px; }
+.ab7-role { margin: 2px 0 10px; color: #65a8ba; font-weight: 600; font-size: 13px; }
+.ab7-links { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.ab7-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 6px; text-decoration: none;
+  background: linear-gradient(#ffffff, #ebf5f8); border: 1px solid var(--alt-3);
+  color: var(--outline-deep); font-weight: 600; font-size: 12.5px;
+}
+.ab7-link:hover { background: #ffffff; border-color: var(--tint-3); }
+.ab7-link .bx { font-size: 15px; color: var(--accent); }
+.ab7-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.ab7-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 12px; font-size: 11.5px;
+  background: var(--tint-1); color: var(--outline-deep); border: 1px solid var(--tint-2);
+}
+.ab7-badge .bx { font-size: 13px; color: var(--accent); }
+
+.ab7-section { padding: 16px 0 24px; }
+.ab7-section + .ab7-section { border-top: 1px solid var(--alt-3); }
+.ab7-section .btn-row { margin-top: 18px; }
+.ab7-section h2 { margin: 4px 0 10px; font-size: 16px; color: var(--ink); }
+.ab7-section p { margin: 0 0 10px; }
+.ab7-study {
+  padding: 12px 14px; border-radius: 8px;
+  background: linear-gradient(135deg, #ffffff, #ecf3f9); border: 1px solid var(--alt-3);
+}
+.ab7-study-name { font-weight: 700; color: var(--ink); }
+.ab7-study-sub { font-size: 12.5px; color: var(--outline); margin-top: 2px; }
+.ab7-toolkit { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ab7-toolkit li {
+  padding: 6px 12px; border-radius: 14px; font-size: 12.5px; font-weight: 600;
+  background: linear-gradient(135deg, var(--tint-1), var(--alt-1));
+  border: 1px solid var(--alt-3); color: var(--outline-deep);
+}
+
+/* =======================================================
+   Windows 7 Explorer layout (the Gallery uses this)
+   ======================================================= */
+.explorer {
+  display: flex; flex-direction: column; height: 100%;
+  flex: 1 1 auto; min-height: 0;   /* fill the flex-column window-body */
+  background: #ffffff; font-size: 12px; color: #2a3947;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  /* Re-tint 7.css's list selection variables to pink so the tree
+     highlight follows the theme (defaults are light blue #c4fca8). */
+  --w7-li-bg-hl: linear-gradient(#ffffffdd, #d2eef6cc 90%, #ffffffe6);
+  --w7-li-bd-hl: #a8d8e6;
+}
+/* 7.css sets min-width:75px + hover pseudo-overlays on every <button>;
+   neutralise both so Explorer buttons size to content and don't flash. */
+.explorer button { min-width: 0; min-height: 0; box-shadow: none; }
+.explorer button::before, .explorer button::after { content: none !important; }
+
+/* ── address bar ── */
+.ex-addressbar {
+  display: flex; align-items: center; gap: 7px; padding: 6px 8px;
+  background: linear-gradient(#f8fcfd, #e6f0f8);
+  border-bottom: 1px solid #cbdceb;
+}
+.ex-nav-btns { display: flex; align-items: center; gap: 5px; }
+.ex-nav-btns button {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer; padding: 0;
+  border: 1px solid #66afc3;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 26%, #eafafe 0%, #a5e5f7 46%, #68bed6 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.85), inset 0 -2px 3px rgba(54,134,156,.35), 0 1px 2px rgba(45,108,125,.3);
+}
+.ex-nav-btns .bx {
+  font-size: 20px; color: #ffffff; line-height: 1;
+  filter: drop-shadow(0 -1px 1px rgba(24,104,126,.45));
+}
+.ex-nav-btns button:hover { filter: brightness(1.07); }
+.ex-nav-btns .ex-fwd { filter: grayscale(.85) opacity(.5); cursor: default; }
+.ex-crumb {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 3px;
+  height: 24px; padding: 0 8px; border: 1px solid #afc9df; border-radius: 3px;
+  background: #ffffff; color: #2a3947; overflow: hidden; white-space: nowrap;
+  box-shadow: inset 0 1px 1px rgba(47,82,113,.05);
+}
+.ex-crumb > .bx { color: #e6a53c; font-size: 15px; margin-right: 2px; }  /* amber folder (Win7) */
+.ex-crumb .seg { padding: 1px 4px; border-radius: 2px; }
+.ex-crumb .seg:hover { background: #e5f3f7; }
+.ex-crumb .sep { color: #8faec9; font-size: 9px; }
+/* 7.css .searchbox component, sized to fit the address bar */
+.ex-search { width: 150px; flex: 0 0 auto; }
+.ex-search input {
+  width: 100%; min-width: 0;   /* inputs default to ~187px intrinsic min-width */
+  height: 24px; font-size: 12px; font-family: inherit; box-sizing: border-box;
+}
+
+/* ── command bar ── */
+.ex-toolbar {
+  display: flex; align-items: center; gap: 1px; padding: 3px 6px;
+  background: linear-gradient(#fafdff, #e9f2f9);
+  border-bottom: 1px solid #d1e0ed;
+}
+.ex-toolbar button {
+  border: 1px solid transparent; background: transparent; padding: 4px 9px;
+  border-radius: 3px; font-size: 12px; color: var(--outline-deep); cursor: pointer; font-family: inherit;
+}
+.ex-toolbar button:hover { background: linear-gradient(#e9f8fc, #d4edf4); border-color: #b9dfea; }
+.ex-toolbar .spacer { flex: 1; }
+
+/* ── split panes ── */
+.ex-main { flex: 1 1 auto; display: flex; min-height: 0; }
+
+/* nav pane: the light folder tree */
+.ex-nav {
+  width: 160px; flex: 0 0 160px; overflow: auto; padding: 6px 0 12px;
+  background: linear-gradient(90deg, #fafcfd, #eef4fa);
+  border-right: 1px solid #d4e2ef;
+}
+.ex-nav .nav-head {
+  display: flex; align-items: center; gap: 5px; padding: 5px 8px 4px 6px;
+  color: var(--outline); font-weight: 700;
+}
+.ex-nav .nav-head .tri { color: #88a3ba; font-size: 9px; width: 9px; text-align: center; }
+.ex-nav .nav-head .bx { font-size: 15px; }
+.ex-nav .nav-link {
+  display: flex; align-items: center; gap: 7px; margin: 1px 5px;
+  padding: 4px 8px 4px 26px; cursor: pointer; color: #394855;
+  border: 1px solid transparent; border-radius: 3px; white-space: nowrap;
+}
+.ex-nav .nav-link .bx { font-size: 15px; color: #65a6b8; }
+.ex-nav .nav-link:hover { background: var(--w7-li-bg-hl); border-color: var(--w7-li-bd-hl); }
+.ex-nav .nav-link.active {
+  background: linear-gradient(#e5f7fc, #c8e9f3); border-color: #a8d8e6;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+/* content pane */
+.ex-content { flex: 1 1 auto; overflow: auto; padding: 12px 16px; background: linear-gradient(180deg, #f7fcfd, #f1f9fc); }
+.ex-group-hdr {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--ink); font-size: 13px; font-weight: 400; margin: 2px 0 14px;
+}
+.ex-group-hdr::before { content: "▾"; color: #8da9c2; font-size: 10px; }
+.ex-group-hdr::after { content: ""; flex: 1; height: 0; border-top: 1px solid #d5e3ef; }
+.ex-content .gallery-grid { margin-top: 0; }
+
+/* details pane (bottom, like Win7) */
+.ex-details {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 11px; padding: 8px 12px;
+  background: linear-gradient(#edf4fa, #dde8f2); border-top: 1px solid #c5d9ea; color: var(--outline-deep);
+}
+.ex-details .ex-dico {
+  width: 36px; height: 36px; border-radius: 7px; flex: 0 0 auto;
+  display: grid; place-items: center; font-size: 20px; color: #ffffff;
+  background: linear-gradient(135deg, #a2dff0, #caefb8);
+  border: 1px solid #ffffff; box-shadow: 0 1px 3px rgba(58,87,113,.25);
+}
+.ex-details .ex-dinfo b { font-size: 12.5px; color: #2e4151; }
+.ex-details .ex-dinfo div { font-size: 11px; color: #697987; margin-top: 1px; }
+
+/* Gallery */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 14px;
+  margin-top: 4px;
+}
+.art {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 7px;
+  display: grid; place-items: center;
+  font-size: 40px; overflow: hidden;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  border: 3px solid #ffffff;
+  outline: 1px solid #a0cedb;
+  box-shadow: 0 3px 9px rgba(76,129,144,.28), inset 0 0 0 1px rgba(255,255,255,.5);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+/* glossy sheen over the top half (Aero photo frame) */
+.art::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 52%;
+  background: linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.05));
+  pointer-events: none;
+}
+.art:hover { transform: scale(1.05) rotate(-1.5deg); box-shadow: 0 8px 18px rgba(76,129,144,.4); }
+.art.art-img { padding: 0; }
+.art.art-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Gallery lightbox */
+#lightbox {
+  position: fixed; inset: 0; z-index: 20000; display: none; place-items: center;
+  background: rgba(33,54,72,.62); backdrop-filter: blur(5px);
+}
+#lightbox.show { display: grid; }
+#lightbox .lb-inner {
+  position: relative; max-width: 90vw; max-height: 90vh;
+  background: #ffffff; padding: 10px; border-radius: 12px;
+  border: 1px solid var(--outline);
+  box-shadow: 0 24px 70px rgba(17,53,63,.55), inset 0 1px 0 rgba(255,255,255,.8);
+}
+#lightbox .lb-img { display: block; max-width: 86vw; max-height: 80vh; border-radius: 6px; }
+#lightbox .lb-cap { text-align: center; padding: 8px 4px 2px; color: var(--ink); font-weight: 700; }
+#lightbox .lb-close {
+  position: absolute; top: -14px; right: -14px; width: 30px; height: 30px;
+  border-radius: 50%; cursor: pointer; color: #ffffff; font-size: 14px; line-height: 1;
+  border: 1px solid var(--outline-deep);
+  background: radial-gradient(circle at 50% 30%, #e1f8fe, #77d9f4 60%, #57bbd7);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.8), 0 2px 4px rgba(36,81,94,.4);
+}
+#lightbox .lb-close:hover { filter: brightness(1.06); }
+
+/* =======================================================
+   Boxicons: sizing and colour across the UI
+   ======================================================= */
+.bx { vertical-align: middle; line-height: 1; }
+
+/* Start button orb + tray */
+#start-btn .orb .bx { font-size: 20px; color: #ffffff; }
+#tray .bx { font-size: 16px; }
+#shutdown .bx { font-size: 15px; position: relative; top: -1px; }
+
+/* Start menu */
+.start-header .avatar .bx { font-size: 26px; color: var(--outline); }
+.start-list li span { display: inline-flex; }
+.start-list li .bx { font-size: 19px; color: var(--outline); }
+.start-list li:hover .bx { color: var(--outline-deep); }
+
+/* Window title bars (7.css) */
+.winbox.seven .title-bar-text .bx {
+  font-size: 14px;
+  color: var(--outline-deep);
+  position: relative;
+  top: -1px;
+}
+
+/* Taskbar buttons */
+.task-btn .bx { font-size: 15px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  #tray #net, #tray #vol { display: none; }
+  #start-menu { width: calc(100vw - 12px); }
+}
+
+/* =======================================================
+   Windows on small screens
+   Windows are spawned full-desktop on a phone (see windowGeometry in
+   script.js), so the job here is the chrome inside them: side panes
+   become horizontal strips, and anything that assumed ~600px of width
+   gets to wrap or scroll.
+   ======================================================= */
+@media (max-width: 640px) {
+  /* No edge-resizing on touch, the window already fills the desktop. */
+  .winbox.seven .wb-n, .winbox.seven .wb-e,
+  .winbox.seven .wb-s, .winbox.seven .wb-w,
+  .winbox.seven .wb-nw, .winbox.seven .wb-ne,
+  .winbox.seven .wb-se, .winbox.seven .wb-sw { display: none; }
+  .winbox.seven .title-bar { cursor: default; }
+
+  /* Slightly larger tap targets, scaled as a cluster so 7.css's button
+     sprites keep their proportions. */
+  .winbox.seven .title-bar-controls {
+    transform: scale(1.18);
+    transform-origin: right center;
+  }
+
+  /* Drop the path field, three of them don't fit at 375px. */
+  .winbox.seven .status-bar .status-bar-field:nth-child(3) { display: none; }
+
+  /* About: the left nav becomes a scrollable tab strip above the content. */
+  .about7 { flex-direction: column; }
+  .about7 .ab7-nav {
+    width: auto; flex: 0 0 auto;
+    flex-direction: row; gap: 6px;
+    overflow-x: auto; padding: 8px;
+    border-right: 0; border-bottom: 1px solid #d4e2ef;
+  }
+  .about7 .ab7-navlink { flex: 0 0 auto; white-space: nowrap; padding: 6px 11px; }
+  .ab7-content { padding: 14px; }
+
+  /* Explorer: the folder tree becomes a horizontal filter strip. */
+  .ex-main { flex-direction: column; }
+  .ex-nav {
+    width: auto; flex: 0 0 auto;
+    display: flex; gap: 6px;
+    overflow-x: auto; padding: 6px 8px;
+    border-right: 0; border-bottom: 1px solid #d4e2ef;
+    background: linear-gradient(180deg, #fafcfd, #eef4fa);
+  }
+  .ex-nav .nav-head { display: none; }              /* "Favorites" / "Categories" headers */
+  .ex-nav .nav-link {
+    flex: 0 0 auto; margin: 0; padding: 5px 10px;
+    white-space: nowrap; border-radius: 3px;
+  }
+
+  /* Address bar: let the search box drop to its own row instead of squeezing
+     the breadcrumb to nothing. */
+  .ex-addressbar { flex-wrap: wrap; }
+  .ex-crumb { min-width: 0; }
+  .ex-search { width: 100%; flex: 1 0 100%; }
+
+  .ex-toolbar { overflow-x: auto; }
+  .ex-toolbar button { flex: 0 0 auto; white-space: nowrap; }
+  /* Decorative Explorer commands ("Share with", "New folder", "Burn"…) don't
+     fit at 375px, so keep the first two and the view button on the right. */
+  .ex-toolbar button:nth-child(n+3):not(:last-child) { display: none; }
+
+  /* These rows are swiped, not scrollbar-dragged: the themed 17px Win7
+     scrollbar would eat most of the strip. */
+  .ex-nav::-webkit-scrollbar,
+  .ex-toolbar::-webkit-scrollbar,
+  .about7 .ab7-nav::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  .ex-nav, .ex-toolbar, .about7 .ab7-nav { scrollbar-width: none; }
+  .ex-content { padding: 10px; }
+  .ex-details { padding: 6px 10px; gap: 8px; }
+
+  .win-pad { padding: 14px; }
+
+  .welcome-list .tip-pointer { display: none; }
+  .welcome-list .tip-touch { display: flex; }
+}
+
+/* =======================================================
+   Boot screen: the Windows 7 logon, in Aero sky blue
+   One flat gradient, the user tile, the name, the marquee.
+   ======================================================= */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(118deg, #1e8ecb 0%, #62bde9 34%, #a9def6 64%, #e8f9ff 100%);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: progress;
+  transition: opacity .45s ease, visibility .45s ease;
+}
+#boot.boot-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.boot-user { text-align: center; transform: translateY(-6%); }
+
+/* The logon user tile: white mat, thin frame, soft drop shadow */
+.boot-tile {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 4px solid #ffffff;
+  border-radius: 5px;
+  box-shadow:
+    0 0 0 1px rgba(77,113,123,.4),
+    0 5px 14px rgba(67,111,123,.25);
+  overflow: hidden;
+}
+.boot-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+.boot-emoji { font-size: 54px; line-height: 1; }
+
+/* Account name: bold white with the Win7 logon shadow */
+.boot-name {
+  margin: 12px 0 9px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(12,60,88,.75);
+}
+
+/* The 7.css marquee, sized like the logon password box and tinted pink */
+#boot [role="progressbar"] {
+  --w7-pg-bg: #54c1e0;                 /* the sweeping band */
+  width: 152px;
+  height: 16px;
+  margin: 0 auto;
+  border-color: #618792;
+  background:
+    radial-gradient(circle at 0 50%, rgba(0,0,0,.12) 10px, transparent 30px),
+    radial-gradient(circle at 100% 50%, rgba(0,0,0,.12) 10px, transparent 30px),
+    linear-gradient(180deg, #f8fdff, #fdffff 3px, #d9eef4 6px, #cee7ee 0, #daeff5),
+    #e1f1f5;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.6),
+    0 1px 3px rgba(67,111,123,.28);
+}
+#boot [role="progressbar"].marquee::before { opacity: .85; }
+
+@media (max-width: 640px) {
+  .boot-tile { width: 84px; height: 84px; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #boot { transition: none; }
+}
+
+/* Shown only when content.js fails to parse (see script.js). */
+.content-error {
+  position: fixed; inset: 0; z-index: 100000;
+  display: grid; place-items: center; padding: 20px;
+  background: linear-gradient(118deg, #1e8ecb, #62bde9 34%, #a9def6 64%, #e8f9ff);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+.content-error .window { width: min(440px, 100%); box-shadow: 0 14px 46px rgba(10,60,90,.45); }
+.content-error .window-body { padding: 14px 16px; font-size: 13px; line-height: 1.5; color: #123; }
+.content-error p { margin: 0 0 10px; }
+.content-error p:last-child { margin-bottom: 0; }
+
+/* =======================================================
+   Bubbles bits: the blog, links and credits windows,
+   plus the "Bubbles OS" text logo.
+   ======================================================= */
+
+/* Shared little header + intro line used by the simple windows */
+.pad-hdr {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 16px; font-weight: 700; color: var(--ink);
+  margin-bottom: 10px;
+}
+.pad-hdr .bx { font-size: 19px; color: var(--accent); }
+.pad-lead { margin: 0 0 12px; }
+.pad-sub {
+  margin: 18px 0 6px; font-weight: 700; color: var(--ink);
+  border-top: 1px solid var(--alt-3); padding-top: 12px;
+}
+.pad-note { margin: 0 0 10px; font-size: 12px; color: #628999; }
+
+/* ---------- Blog ---------- */
+.post { padding: 13px 0; border-top: 1px solid var(--alt-3); }
+.post:first-of-type { border-top: 0; padding-top: 2px; }
+.post h3 { margin: 0 0 3px; font-size: 15px; color: var(--ink); }
+.post time { font-size: 11.5px; color: #628999; }
+.post p { margin: 8px 0 0; }
+
+/* ---------- Links ---------- */
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.link-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px; text-decoration: none;
+  background: linear-gradient(180deg, #ffffff, #eaf7fd 45%, #dcf0fa 46%, #f2fbfe);
+  border: 1px solid #b9dcea; border-radius: 6px;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(20,80,110,.12);
+}
+.link-card:hover { border-color: var(--tint-3); filter: brightness(1.03); }
+.lc-ico { font-size: 22px; flex: 0 0 auto; }
+.lc-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.lc-txt b { font-size: 13px; color: var(--ink); }
+.lc-txt small { font-size: 11px; color: #628999; }
+
+/* the classic 88x31 buttons */
+.button-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn88 {
+  width: 88px; height: 31px;
+  display: grid; place-items: center;
+  font-size: 10px; color: #7aa3b4; letter-spacing: .5px;
+  background: #f2fbfe; border: 1px dashed #9fc9dc; border-radius: 2px;
+}
+img.btn88 { border: 1px solid #b9dcea; border-style: solid; image-rendering: pixelated; }
+
+/* ---------- Credits ---------- */
+.credits-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.credits-list li { display: flex; flex-direction: column; line-height: 1.35; }
+.credits-list a { color: var(--accent); font-weight: 700; text-decoration: none; width: fit-content; }
+.credits-list a:hover { text-decoration: underline; }
+.credits-list span { font-size: 12px; color: #5f8496; }
+.credits-tm { font-size: 11px; color: #7fa0ae; line-height: 1.45; margin: 14px 0 0; }
+
+/* ---------- Vista icons ----------
+   Any window icon can be a picture instead of a Boxicons glyph. These
+   rules size them wherever they turn up: the desktop, the Start menu,
+   window title bars, taskbar buttons and the corner window. */
+.desk-icon .icon img {
+  width: 48px; height: 48px;
+  display: block; margin: 0 auto;   /* centre it over the label */
+  filter: drop-shadow(0 2px 3px rgba(2,32,52,.55));
+}
+.sm-ico img { width: 22px; height: 22px; display: block; margin: 0 auto; }
+.winbox.seven .title-bar-text .win-ico {
+  width: 15px; height: 15px;
+  vertical-align: middle; position: relative; top: -1px;
+  margin-right: 2px;
+}
+.task-btn .win-ico { width: 22px; height: 22px; display: block; margin: 0 auto; filter: drop-shadow(0 1px 1px rgba(4,52,78,.5)); }
+.dp-icon img { width: 52px; height: 52px; display: block; margin: 0 auto; }
+
+/* ---------- The little corner window ---------- */
+#desk-panel {
+  position: absolute;
+  top: 22px; right: 26px;
+  width: 234px;
+  z-index: 0;
+  pointer-events: none;     /* untouchable on purpose */
+  user-select: none;
+}
+#desk-panel .window { box-shadow: 0 10px 30px rgba(10,60,90,.35); }
+#desk-panel .window-body { padding: 14px 14px 16px; text-align: center; }
+.dp-kicker {
+  margin: 6px 0 0;
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: #628999;
+}
+.dp-title { margin: 2px 0 11px; font-size: 21px; color: var(--ink); }
+.dp-text {
+  margin: 0; padding-top: 11px;
+  border-top: 1px solid var(--alt-3);
+  font-size: 12px; line-height: 1.5; color: #4a6b7a;
+}
+
+.welcome-logo .logo-text {
+  font-size: 34px; font-weight: 300; letter-spacing: .5px;
+  color: var(--ink);
+}
+.welcome-logo .logo-text b { font-weight: 700; color: var(--accent); }
+
+@media (max-width: 640px) {
+  #desk-panel { display: none; }   /* no room for it next to the icons */
+  .link-grid { grid-template-columns: 1fr; }
+}

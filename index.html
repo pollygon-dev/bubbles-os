@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bubbles OS</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- 7.css: Windows 7 UI toolkit -->
+  <link rel="stylesheet" href="https://unpkg.com/7.css" />
+  <!-- WinBox: window manager -->
+  <link rel="stylesheet" href="https://unpkg.com/winbox@0.2.82/dist/css/winbox.min.css" />
+  <!-- Boxicons: desktop / UI iconography -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- No JS = nothing to boot into; don't trap the visitor on the boot screen. -->
+  <noscript><style>#boot { display: none; }</style></noscript>
+
+  <!-- No JS = nothing to boot into; don't trap the visitor on the boot screen. -->
+  <noscript><style>#boot { display: none; }</style></noscript>
+</head>
+<body>
+
+  <!-- ===================== BOOT SCREEN (Windows 7 logon) ===================== -->
+  <div id="boot" role="status" aria-live="polite" aria-label="Starting Bubbles OS">
+    <div class="boot-user">
+      <div class="boot-tile"><img src="assets/user-icon.jpg" alt="" /></div>
+      <p class="boot-name">Your Name</p>
+      <div role="progressbar" class="marquee"></div>
+    </div>
+  </div>
+  <!-- ===================== DESKTOP ===================== -->
+  <main id="desktop">
+    <!-- Desktop icons -->
+    <ul id="icons">
+      <li class="desk-icon" data-window="about" tabindex="0">
+        <span class="icon"><img src="assets/icons/about.png" alt=""></span>
+        <span class="label">About Me</span>
+      </li>
+      <li class="desk-icon" data-window="blog" tabindex="0">
+        <span class="icon"><img src="assets/icons/blog.png" alt=""></span>
+        <span class="label">Blog</span>
+      </li>
+      <li class="desk-icon" data-window="links" tabindex="0">
+        <span class="icon"><img src="assets/icons/links.png" alt=""></span>
+        <span class="label">Links</span>
+      </li>
+      <li class="desk-icon" data-window="gallery" tabindex="0">
+        <span class="icon"><img src="assets/icons/gallery.png" alt=""></span>
+        <span class="label">Gallery</span>
+      </li>
+      <li class="desk-icon" data-window="credits" tabindex="0">
+        <span class="icon"><img src="assets/icons/credits.png" alt=""></span>
+        <span class="label">Credits</span>
+      </li>
+    </ul>
+
+    <!-- Little window -->
+    <!-- A little window that just sits there looking nice. It cannot be
+         clicked or dragged (pointer-events are off in the CSS), it is purely
+         decoration. Change the words, or delete the whole block. -->
+    <aside id="desk-panel" aria-hidden="true">
+      <div class="window" style="--w7-w-bg:#8ed2ef; --w7-surface:#f3fbfe; --w7-w-bd:#2c7ea3;">
+        <div class="title-bar">
+          <div class="title-bar-text">welcome</div>
+        </div>
+        <div class="window-body">
+          <div class="dp-icon"><img src="assets/icons/computer.png" alt=""></div>
+          <p class="dp-kicker">Welcome to</p>
+          <p class="dp-title">my website!</p>
+          <p class="dp-text">Room for a hello, a chatbox, a hit counter, or a
+             little "now playing" list. Whatever you want in the corner.</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===================== TASKBAR ===================== -->
+  <footer id="taskbar">
+    <button id="start-btn" type="button">
+      <span class="orb"><img class="winflag" src="assets/windowsbutton.svg" alt="" /></span> Start
+    </button>
+    <div id="task-buttons"></div>
+    <div id="tray">
+      <span id="net" title="Network"><i class="bx bxs-wifi"></i></span>
+      <span id="vol" title="Volume"><i class="bx bxs-volume-full"></i></span>
+      <span id="clock"><span class="time">--:--</span><span class="date"></span></span>
+    </div>
+  </footer>
+
+  <!-- ===================== START MENU (Windows 7) ===================== -->
+  <nav id="start-menu" hidden>
+    <!-- left: pinned programs -->
+    <div class="sm-left">
+      <ul class="sm-programs">
+        <li data-window="about"><span class="sm-ico"><img src="assets/icons/about.png" alt=""></span><span class="sm-txt"><b>About Me</b><small>who runs this place</small></span></li>
+        <li data-window="blog"><span class="sm-ico"><img src="assets/icons/blog.png" alt=""></span><span class="sm-txt"><b>Blog</b><small>posts and updates</small></span></li>
+        <li data-window="links"><span class="sm-ico"><img src="assets/icons/links.png" alt=""></span><span class="sm-txt"><b>Links</b><small>sites I like</small></span></li>
+        <li data-window="gallery"><span class="sm-ico"><img src="assets/icons/gallery.png" alt=""></span><span class="sm-txt"><b>Gallery</b><small>pictures</small></span></li>
+        <li data-window="credits"><span class="sm-ico"><img src="assets/icons/credits.png" alt=""></span><span class="sm-txt"><b>Credits</b><small>who made what</small></span></li>
+      </ul>
+      <div class="sm-allprograms" data-window="welcome"><i class="bx bx-chevron-right"></i> All Programs</div>
+      <div class="searchbox sm-search">
+        <input type="search" placeholder="Search programs and files" />
+      </div>
+    </div>
+    <!-- right: user + places -->
+    <div class="sm-right">
+      <div class="sm-avatar"><i class="bx bxs-cube-alt"></i></div>
+      <div class="sm-username">Your Name</div>
+      <ul class="sm-places">
+        <li data-window="about">Documents</li>
+        <li data-window="gallery">Pictures</li>
+        <li data-window="blog">Blog</li>
+        <li data-window="links">Links</li>
+        <li class="sm-gap"></li>
+        <li><a href="https://example.com/" target="_blank" rel="noopener">My Site ↗</a></li>
+        <li><a href="https://github.com/your-username" target="_blank" rel="noopener">GitHub ↗</a></li>
+        <li data-window="credits">Credits</li>
+      </ul>
+      <!-- Shut down sends visitors to this address. Change data-url to
+             wherever you like, or point it at your own homepage. -->
+        <div class="sm-shutdown"><button id="shutdown" type="button" data-url="https://nekoweb.org">Shut down</button></div>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       YOUR STUFF GOES HERE
+
+       This is the part you edit. Every <section> below is one window, and
+       whatever you type between the tags is what shows up inside it. That is
+       the whole trick, there is nothing else to learn.
+
+       Pictures: drop files into assets/ and point at them, like assets/photo.jpg
+       Icons:    any name from https://boxicons.com, like <i class="bx bxs-star"></i>
+
+       Each section carries its own title, icon and size in the data- bits on
+       its <section> tag, so a new window is just a new section plus a desktop
+       icon. You never have to open script.js for it.
+
+       If something breaks, undo until it works again :p
+       ========================================================================= -->
+  <div id="templates" hidden>
+
+    <!-- ============ ABOUT ME ============
+         Time to introduce yourself. The buttons down the left side jump to
+         the matching section. If you want another one, copy a button and a section,
+         then give them both the same name! -->
+    <section data-tpl="about"
+             data-title="About Me" data-icon="assets/icons/about.png"
+             data-w="580" data-h="520">
+      <div class="about7">
+        <aside class="ab7-nav">
+          <button class="ab7-navlink active" data-scroll="intro">Introduction</button>
+          <button class="ab7-navlink" data-scroll="likes">Things I like</button>
+          <button class="ab7-navlink" data-scroll="skills">Skills</button>
+        </aside>
+        <div class="ab7-content" data-ab-content>
+          <div class="ab7-profile">
+            <div class="ab7-avatar"><img src="assets/user-icon.jpg" alt=""></div>
+            <h1>Your Name</h1>
+            <p class="ab7-role">whatever you want written under your name</p>
+
+            <div class="ab7-links">
+              <a class="ab7-link" href="https://github.com/your-username" target="_blank" rel="noopener"><i class="bx bxl-github"></i> GitHub</a>
+              <a class="ab7-link" href="mailto:you@example.com"><i class="bx bxs-envelope"></i> Email</a>
+            </div>
+
+            <div class="ab7-badges">
+              <span class="ab7-badge"><i class="bx bxs-map"></i> Your City</span>
+              <span class="ab7-badge"><i class="bx bx-globe"></i> English</span>
+            </div>
+          </div>
+
+          <section class="ab7-section" data-sec="intro">
+            <p>Hi! Write your intro here. Who you are, what you make, why you
+               made a website. Two or three sentences is plenty.</p>
+            <p>Second paragraph if you feel like rambling. Delete it if you don't.</p>
+            <div class="btn-row">
+              <button type="button" data-window="blog">Read the blog</button>
+              <button type="button" data-window="links">See my links</button>
+            </div>
+          </section>
+
+          <section class="ab7-section" data-sec="likes">
+            <h2>Things I like</h2>
+            <ul class="ab7-toolkit">
+              <li>Old operating systems</li>
+              <li>Bubbles, obviously</li>
+              <li>Making websites at 2am</li>
+            </ul>
+          </section>
+
+          <section class="ab7-section" data-sec="skills">
+            <h2>Skills</h2>
+            <ul class="ab7-toolkit">
+              <li>HTML / CSS</li>
+              <li>JavaScript</li>
+              <li>Drawing</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BLOG ============
+         Newest post goes at the top. Copy an <article> every time you want
+         to write something new, and write as much as you like. -->
+    <section data-tpl="blog"
+             data-title="Blog" data-icon="assets/icons/blog.png"
+             data-w="560" data-h="500">
+      <div class="win-pad blog-pad">
+        <div class="pad-hdr"><i class="bx bxs-news"></i> Blog</div>
+
+        <article class="post">
+          <h3>my site is finally up</h3>
+          <time>29 August 2026</time>
+          <p>First post! Write whatever you want here. Blog posts, updates,
+             thoughts about a game you played, a list of songs. It's your site.</p>
+          <p>Need another paragraph? Just add another &lt;p&gt; tag.</p>
+        </article>
+
+        <article class="post">
+          <h3>hello world</h3>
+          <time>15 August 2026</time>
+          <p>Older posts sit lower down. Delete these two once you write your own,
+             or keep them around so you remember what the markup looks like.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ LINKS ============
+         Friends, webrings, sites you like. The 88x31 buttons at the bottom
+         are the classic old web thing, so swap the dotted placeholders for
+         real ones once you collect a few. -->
+    <section data-tpl="links"
+             data-title="Links" data-icon="assets/icons/links.png"
+             data-w="480" data-h="470">
+      <div class="win-pad links-pad">
+        <div class="pad-hdr"><i class="bx bxs-heart"></i> Links</div>
+        <p class="pad-lead">Sites I like. Go visit them!</p>
+
+        <div class="link-grid">
+          <a class="link-card" href="https://neocities.org" target="_blank" rel="noopener">
+            <span class="lc-ico">🌐</span>
+            <span class="lc-txt"><b>Neocities</b><small>neocities.org</small></span>
+          </a>
+          <a class="link-card" href="https://nekoweb.org" target="_blank" rel="noopener">
+            <span class="lc-ico">🐱</span>
+            <span class="lc-txt"><b>Nekoweb</b><small>nekoweb.org</small></span>
+          </a>
+          <a class="link-card" href="https://example.com" target="_blank" rel="noopener">
+            <span class="lc-ico">🫧</span>
+            <span class="lc-txt"><b>A friend's site</b><small>example.com</small></span>
+          </a>
+        </div>
+
+        <div class="pad-sub">Buttons</div>
+        <p class="pad-note">Put 88x31 buttons in assets/ and swap them in below.
+           The empty boxes are just placeholders.</p>
+        <div class="button-row">
+          <span class="btn88">88x31</span>
+          <span class="btn88">88x31</span>
+          <span class="btn88">88x31</span>
+          <!-- A real one looks like this:
+               <a href="https://friend.site"><img class="btn88" src="assets/friend.gif" alt="friend"></a> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GALLERY ============
+         Your art goes here. This is the only window using the file explorer
+         look, meaning the address bar, the folder tree and the toolbar. If
+         you want a second window like it, copy this whole section and rename
+         its data-tpl.
+
+         Picture tile:  <div class="art art-img" data-caption="Title"><img src="assets/art.jpg" alt="Title"></div>
+         Colour tile:   <div class="art" style="--c1:#9fe0e8;--c2:#e6f8fe">🫧</div>
+         Picture tiles open full size when you click them. -->
+    <section data-tpl="gallery"
+             data-title="Gallery" data-icon="assets/icons/gallery.png"
+             data-w="620" data-h="470">
+      <div class="explorer">
+        <div class="ex-addressbar">
+          <div class="ex-nav-btns"><button class="ex-back" title="Back"><i class="bx bx-chevron-left"></i></button><button class="ex-fwd" title="Forward"><i class="bx bx-chevron-right"></i></button></div>
+          <div class="ex-crumb"><i class="bx bxs-image"></i><span class="seg">Libraries</span><span class="sep">▸</span><span class="seg">Pictures</span><span class="sep">▸</span><span class="seg">Gallery</span></div>
+          <div class="searchbox ex-search">
+            <input type="search" placeholder="Search Gallery" data-ex="search" />
+            <button aria-label="search"></button>
+          </div>
+        </div>
+        <div class="ex-toolbar">
+          <button>Organize ▾</button>
+          <button>Slide show</button>
+          <button>Share with ▾</button>
+          <button>Burn</button>
+          <span class="spacer"></span>
+          <button title="Change view">▦ ▾</button>
+        </div>
+        <div class="ex-main">
+          <aside class="ex-nav">
+            <div class="nav-head"><span class="tri">▿</span><i class="bx bxs-star" style="color:#e6b93c"></i> Favorites</div>
+            <div class="nav-link active"><i class="bx bxs-image" style="color:#2f9ec9"></i> All Photos</div>
+            <div class="nav-head" style="margin-top:8px"><span class="tri">▿</span><i class="bx bxs-book-alt" style="color:#57b6d8"></i> Libraries</div>
+            <div class="nav-link"><i class="bx bxs-image-alt" style="color:#2f9ec9"></i> Pictures</div>
+            <div class="nav-link"><i class="bx bxs-camera" style="color:#2f9ec9"></i> Camera Roll</div>
+          </aside>
+          <div class="ex-content">
+            <div class="ex-group-hdr" data-ex="hdr">Gallery</div>
+            <div class="gallery-grid">
+              <div class="art art-img" data-caption="Wallpaper 1"><img src="assets/gallery/anime_1.jpg" alt="Wallpaper 1"></div>
+              <div class="art art-img" data-caption="Wallpaper 2"><img src="assets/gallery/anime_5.jpg" alt="Wallpaper 2"></div>
+              <div class="art art-img" data-caption="Wallpaper 3"><img src="assets/gallery/anime_8.jpg" alt="Wallpaper 3"></div>
+              <div class="art art-img" data-caption="Wallpaper 4"><img src="assets/gallery/anime_17.jpg" alt="Wallpaper 4"></div>
+
+              <!-- No pictures yet? A colour tile with an emoji works too:
+                   <div class="art" style="--c1:#9fe0e8;--c2:#e6f8fe" data-caption="A mood">🫧</div> -->
+            </div>
+          </div>
+        </div>
+        <div class="ex-details" data-fill="details"></div>
+      </div>
+    </section>
+
+    <!-- ============ CREDITS ============
+         You do not have to credit me at all, but please keep these four! -->
+    <section data-tpl="credits"
+             data-title="Credits" data-icon="assets/icons/credits.png"
+             data-w="470" data-h="460">
+      <div class="win-pad credits-pad">
+        <div class="pad-hdr"><i class="bx bxs-star"></i> Credits</div>
+        <p class="pad-lead">Bubbles OS utilizes the following! :</p>
+
+        <ul class="credits-list">
+          <li>
+            <a href="https://khang-nd.github.io/7.css/" target="_blank" rel="noopener">7.css</a>
+            <span>the Windows 7 buttons, windows and scrollbars (MIT)</span>
+          </li>
+          <li>
+            <a href="https://nextapps-de.github.io/winbox/" target="_blank" rel="noopener">WinBox.js</a>
+            <span>makes the windows drag, resize and stack (Apache 2.0)</span>
+          </li>
+          <li>
+            <a href="https://boxicons.com" target="_blank" rel="noopener">Boxicons</a>
+            <span>the smaller interface glyphs dotted around (MIT)</span>
+          </li>
+          <li>
+            <a href="https://frutigeraeroarchive.org/" target="_blank" rel="noopener">Frutiger Aero Archive</a>
+            <span>the wallpaper, the Vista icons, and honestly the whole vibe</span>
+          </li>
+        </ul>
+
+        <p class="pad-note"><b>Bubbles</b> is a free desktop template.
+           You do not have to credit the template itself, but please keep the
+           four above. They are the ones doing the heavy lifting! ^_^</p>
+
+        <p class="credits-tm">Windows 7 and the Windows logo are trademarks of
+           Microsoft Corporation. Bubbles is a CSS tribute and is not affiliated
+           with Microsoft.</p>
+      </div>
+    </section>
+
+    <!-- ============ WELCOME ============
+         The window that opens by itself to greet visitors. -->
+    <section data-tpl="welcome"
+             data-title="Welcome" data-icon="assets/icons/welcome.png"
+             data-w="470" data-h="470">
+      <div class="win-pad welcome-pad">
+        <div class="welcome-logo"><span class="logo-text">Bubbles<b>OS</b></span></div>
+        <p class="welcome-lead">Welcome! Here's how to get around:</p>
+        <ul class="welcome-list">
+          <li><i class="bx bxs-mouse"></i> <span><b>Click</b> a desktop icon to open a window.</span></li>
+          <li class="tip-pointer"><i class="bx bxs-hand"></i> <span><b>Drag</b> a title bar to move a window, or drag its edges to resize.</span></li>
+          <li class="tip-touch"><i class="bx bxs-hand-up"></i> <span>Windows <b>fill the screen</b> here, close one to get back to the desktop.</span></li>
+          <li><i class="bx bxs-window-alt"></i> <span>Use the <b>taskbar</b> to switch or minimize windows.</span></li>
+          <li><i class="bx bxs-cube-alt"></i> <span>Hit <b>Start</b> for the full menu.</span></li>
+        </ul>
+        <div class="welcome-note">
+          <b>P.S.:</b> everything you see lives in <b>index.html</b>. Look for the
+          big "YOUR STUFF GOES HERE" comment and start typing.
+          <b>README.md</b> has the rest.
+        </div>
+        <div class="btn-row">
+          <button type="button" class="welcome-start">Explore →</button>
+          <button type="button" data-window="credits">Credits</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- WinBox bundle -->
+  <script src="https://unpkg.com/winbox@0.2.82/dist/winbox.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
