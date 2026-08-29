@@ -4,17 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>404, page not found</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="/bubbles-os/assets/favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/7.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
   <style>
     /* Neocities serves this file for any missing page; Nekoweb and most other
        static hosts have their own 404 setting that can point here too.
 
-       The two root-absolute paths in this file (the favicon above and the
-       "Go to desktop" button below) assume the site lives at the root of the
-       domain. If you install the template in a subfolder, change both `/`
-       paths to match. */
+       This file has two root-absolute paths: the favicon above and the
+       "Go to desktop" button below. They have to be absolute because a 404
+       page gets served for any missing address, including deep ones, so
+       relative paths would point at the wrong place.
+
+       They are set for GitHub Pages at /bubbles-os/. If you put Bubbles at
+       the root of a domain instead, which is what Neocities and Nekoweb do,
+       change them to /assets/favicon.svg and / respectively. */
     html, body { height: 100%; margin: 0; }
     body {
       display: grid; place-items: center;
@@ -60,7 +64,7 @@
       </div>
       <div class="err-actions">
         <button type="button" onclick="history.back()">Back</button>
-        <button type="button" onclick="location.href='/'">Go to desktop</button>
+        <button type="button" onclick="location.href='/bubbles-os/'">Go to desktop</button>
       </div>
     </div>
     <div class="status-bar">
