@@ -677,7 +677,7 @@ html, body {
 .ab7-toolkit { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .ab7-toolkit li {
   padding: 6px 12px; border-radius: 14px; font-size: 12.5px; font-weight: 600;
-  background: linear-gradient(135deg, var(--tint-1), var(--alt-1));
+  background: linear-gradient(#ffffff, #ebf5f8);
   border: 1px solid var(--alt-3); color: var(--outline-deep);
 }
 
